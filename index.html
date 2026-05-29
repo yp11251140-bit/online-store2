@@ -2,8 +2,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>temu knockoffs</title>
 
   <style>
@@ -121,6 +121,7 @@
 
     .checkout-box h2{
       margin-bottom:20px;
+      font-size:30px;
     }
 
     .cart-items{
@@ -131,25 +132,68 @@
       display:flex;
       justify-content:space-between;
       align-items:center;
-      background:#f7f7f7;
-      padding:12px;
+      background:#f8f8f8;
+      padding:16px;
+      border-radius:12px;
+      margin-bottom:12px;
+      gap:20px;
+    }
+
+    .cart-left h4{
+      margin-bottom:4px;
+      font-size:18px;
+    }
+
+    .cart-left p{
+      color:#777;
+      font-size:14px;
+    }
+
+    .cart-middle{
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+
+    .qty-btn{
+      width:35px;
+      height:35px;
+      border:none;
       border-radius:8px;
-      margin-bottom:10px;
+      background:#111;
+      color:white;
+      font-size:20px;
+      cursor:pointer;
+      transition:0.2s;
+      padding:0;
     }
 
-    .remove-btn{
-      background:red;
-      padding:8px 12px;
+    .qty-btn:hover{
+      background:#333;
     }
 
-    .remove-btn:hover{
-      background:darkred;
+    .quantity{
+      font-size:18px;
+      font-weight:bold;
+      min-width:20px;
+      text-align:center;
+    }
+
+    .cart-right{
+      font-size:20px;
+      font-weight:bold;
+      color:#00a63e;
+    }
+
+    .empty-cart{
+      color:#777;
+      padding:10px 0;
     }
 
     #totalPrice{
-      margin-bottom:20px;
+      margin:20px 0;
       color:#00a63e;
-      font-size:24px;
+      font-size:28px;
     }
 
     form{
@@ -167,6 +211,13 @@
       font-size:16px;
     }
 
+    input:focus,
+    select:focus,
+    textarea:focus{
+      outline:none;
+      border-color:#00a63e;
+    }
+
     footer{
       background:#111;
       color:white;
@@ -177,12 +228,22 @@
 
     @media(max-width:768px){
 
-      header h1{
-        font-size:32px;
+      .cart-item{
+        flex-direction:column;
+        align-items:flex-start;
       }
 
-      .section-title{
-        font-size:26px;
+      .cart-middle{
+        width:100%;
+        justify-content:flex-start;
+      }
+
+      .cart-right{
+        align-self:flex-end;
+      }
+
+      header h1{
+        font-size:32px;
       }
 
     }
@@ -269,7 +330,11 @@
       <h2>Checkout</h2>
 
       <div id="cartItems" class="cart-items">
-        <p>Your cart is empty.</p>
+
+        <p class="empty-cart">
+          Your cart is empty.
+        </p>
+
       </div>
 
       <h3 id="totalPrice">
@@ -300,6 +365,7 @@
         >
 
         <select id="payment" required>
+
           <option value="">
             Payment Method
           </option>
@@ -315,6 +381,7 @@
           <option value="Cash on Delivery">
             Cash on Delivery
           </option>
+
         </select>
 
         <textarea
@@ -355,19 +422,46 @@
 
     function addToCart(name, price){
 
-      cart.push({
-        name: name,
-        price: price
-      });
+      const existingItem =
+        cart.find(item => item.name === name);
+
+      if(existingItem){
+
+        existingItem.quantity += 1;
+
+      } else {
+
+        cart.push({
+          name: name,
+          price: price,
+          quantity: 1
+        });
+      }
 
       updateCart();
     }
 
-    // REMOVE ITEM
+    // INCREASE QUANTITY
 
-    function removeItem(index){
+    function increaseQuantity(index){
 
-      cart.splice(index, 1);
+      cart[index].quantity++;
+
+      updateCart();
+    }
+
+    // DECREASE QUANTITY
+
+    function decreaseQuantity(index){
+
+      if(cart[index].quantity > 1){
+
+        cart[index].quantity--;
+
+      } else {
+
+        cart.splice(index, 1);
+      }
 
       updateCart();
     }
@@ -388,28 +482,64 @@
 
       if(cart.length === 0){
 
-        cartItems.innerHTML =
-          "<p>Your cart is empty.</p>";
+        cartItems.innerHTML = `
+          <p class="empty-cart">
+            Your cart is empty.
+          </p>
+        `;
       }
 
       cart.forEach((item, index) => {
 
-        total += item.price;
+        const subtotal =
+          item.price * item.quantity;
+
+        total += subtotal;
 
         cartItems.innerHTML += `
 
           <div class="cart-item">
 
-            <span>
-              ${item.name} - $${item.price.toFixed(2)}
-            </span>
+            <div class="cart-left">
 
-            <button
-              class="remove-btn"
-              onclick="removeItem(${index})"
-            >
-              X
-            </button>
+              <h4>${item.name}</h4>
+
+              <p>
+                $${item.price.toFixed(2)}
+                each
+              </p>
+
+            </div>
+
+            <div class="cart-middle">
+
+              <button
+                type="button"
+                class="qty-btn"
+                onclick="decreaseQuantity(${index})"
+              >
+                −
+              </button>
+
+              <span class="quantity">
+                ${item.quantity}
+              </span>
+
+              <button
+                type="button"
+                class="qty-btn"
+                onclick="increaseQuantity(${index})"
+              >
+                +
+              </button>
+
+            </div>
+
+            <div class="cart-right">
+
+              $${subtotal.toFixed(2)}
+
+            </div>
 
           </div>
 
@@ -440,10 +570,13 @@
 
       cart.forEach(item => {
 
-        orderList +=
-          `${item.name} - $${item.price}\n`;
+        const subtotal =
+          item.price * item.quantity;
 
-        total += item.price;
+        orderList +=
+          `${item.name} x${item.quantity} - $${subtotal.toFixed(2)}\n`;
+
+        total += subtotal;
       });
 
       const templateParams = {
@@ -503,4 +636,3 @@
 </body>
 </html>
 ```
-
