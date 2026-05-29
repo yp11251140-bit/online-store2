@@ -1,4 +1,196 @@
 ```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>temu knockoffs</title>
+
+  <style>
+
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family:Arial, sans-serif;
+    }
+
+    body{
+      background:#f4f4f4;
+      color:#333;
+    }
+
+    header{
+      background:linear-gradient(135deg,#111,#333);
+      color:white;
+      padding:40px 20px;
+      text-align:center;
+    }
+
+    header h1{
+      font-size:42px;
+      margin-bottom:10px;
+    }
+
+    header p{
+      color:#ccc;
+      font-size:18px;
+    }
+
+    .container{
+      width:90%;
+      max-width:1200px;
+      margin:auto;
+      padding:40px 0;
+    }
+
+    .section-title{
+      margin-bottom:25px;
+      font-size:32px;
+    }
+
+    .products{
+      display:grid;
+      grid-template-columns:
+      repeat(auto-fit,minmax(280px,1fr));
+      gap:25px;
+    }
+
+    .product{
+      background:white;
+      border-radius:15px;
+      overflow:hidden;
+      box-shadow:0 5px 15px rgba(0,0,0,0.1);
+      transition:0.3s;
+    }
+
+    .product:hover{
+      transform:translateY(-5px);
+    }
+
+    .product img{
+      width:100%;
+      height:260px;
+      object-fit:cover;
+    }
+
+    .product-info{
+      padding:20px;
+    }
+
+    .product h3{
+      margin-bottom:10px;
+      font-size:24px;
+    }
+
+    .price{
+      color:#00a63e;
+      font-size:22px;
+      font-weight:bold;
+      margin-bottom:12px;
+    }
+
+    .description{
+      color:#666;
+      line-height:1.5;
+      margin-bottom:20px;
+    }
+
+    button{
+      background:#111;
+      color:white;
+      border:none;
+      padding:12px 18px;
+      border-radius:8px;
+      cursor:pointer;
+      transition:0.3s;
+      font-size:16px;
+    }
+
+    button:hover{
+      background:#444;
+    }
+
+    .checkout-box{
+      margin-top:50px;
+      background:white;
+      padding:30px;
+      border-radius:15px;
+      box-shadow:0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .checkout-box h2{
+      margin-bottom:20px;
+    }
+
+    .cart-items{
+      margin-bottom:20px;
+    }
+
+    .cart-item{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      background:#f7f7f7;
+      padding:12px;
+      border-radius:8px;
+      margin-bottom:10px;
+    }
+
+    .remove-btn{
+      background:red;
+      padding:8px 12px;
+    }
+
+    .remove-btn:hover{
+      background:darkred;
+    }
+
+    #totalPrice{
+      margin-bottom:20px;
+      color:#00a63e;
+      font-size:24px;
+    }
+
+    form{
+      display:flex;
+      flex-direction:column;
+    }
+
+    input,
+    select,
+    textarea{
+      padding:14px;
+      margin-bottom:15px;
+      border:1px solid #ccc;
+      border-radius:8px;
+      font-size:16px;
+    }
+
+    footer{
+      background:#111;
+      color:white;
+      text-align:center;
+      padding:20px;
+      margin-top:40px;
+    }
+
+    @media(max-width:768px){
+
+      header h1{
+        font-size:32px;
+      }
+
+      .section-title{
+        font-size:26px;
+      }
+
+    }
+
+  </style>
+
+</head>
+
 <body>
 
   <header>
@@ -8,72 +200,136 @@
 
   <div class="container">
 
-    <h2>Our Products</h2>
+    <h2 class="section-title">
+      Featured Products
+    </h2>
 
     <div class="products">
 
       <!-- PRODUCT 1 -->
+
       <div class="product">
-        <img src="https://img.kwcdn.com/product/fancy/93fa3a13-460c-4cdb-adb5-1e145f4b392d.jpg?imageView2/2/w/800/q/70/format/avif" alt="smart watch">
 
-        <h3>smart watch</h3>
+        <img
+          src="https://img.kwcdn.com/product/fancy/93fa3a13-460c-4cdb-adb5-1e145f4b392d.jpg?imageView2/2/w/800/q/70/format/avif"
+          alt="smart watch"
+        >
 
-        <p class="price">$7.99 USD</p>
+        <div class="product-info">
 
-        <p>aple wach s9 1GB .</p>
+          <h3>Smart Watch</h3>
 
-        <button onclick="addToCart('smart watch', 7.99)">
-          Add to Cart
-        </button>
+          <p class="price">$7.99 USD</p>
+
+          <p class="description">
+            aple wach s9 1GB.
+          </p>
+
+          <button onclick="addToCart('Smart Watch', 7.99)">
+            Add to Cart
+          </button>
+
+        </div>
+
       </div>
 
       <!-- PRODUCT 2 -->
+
       <div class="product">
-        <img src="https://img.kwcdn.com/product/fancy/56d6b452-9b86-49a4-96a6-bf4a18154bb2.jpg?imageView2/2/w/1300/q/90/format/avif" alt="toy bricks">
 
-        <h3>toy building bricks police</h3>
+        <img
+          src="https://img.kwcdn.com/product/fancy/56d6b452-9b86-49a4-96a6-bf4a18154bb2.jpg?imageView2/2/w/1300/q/90/format/avif"
+          alt="toy bricks"
+        >
 
-        <p class="price">$12.99 USD</p>
+        <div class="product-info">
 
-        <p>
-          WOMA 1014pcs SWAT Team Storm Mobile Combat Bus Building Blocks Set
-        </p>
+          <h3>toy building bricks police</h3>
 
-        <button onclick="addToCart('toy building bricks police', 12.99)">
-          Add to Cart
-        </button>
+          <p class="price">$12.99 USD</p>
+
+          <p class="description">
+            WOMA 1014pcs SWAT Team Storm Mobile Combat Bus Building Blocks Set - 6-in-1 Police Vehicle System with SWAT Truck, Helicopter-Like Drone, Boat & Action Figures-like, Compatible with LEGO®/ Bloks® (Assembly Toy Model Gift.
+          </p>
+
+          <button onclick="addToCart('Police Brick Set', 12.99)">
+            Add to Cart
+          </button>
+
+        </div>
+
       </div>
 
     </div>
 
-    <!-- CART -->
+    <!-- CHECKOUT -->
 
-    <form id="checkoutForm">
+    <div class="checkout-box">
 
       <h2>Checkout</h2>
 
-      <div id="cartItems"></div>
+      <div id="cartItems" class="cart-items">
+        <p>Your cart is empty.</p>
+      </div>
 
-      <h3 id="totalPrice">Total: $0.00</h3>
+      <h3 id="totalPrice">
+        Total: $0.00
+      </h3>
 
-      <input type="text" id="name" placeholder="Full Name" required>
+      <form id="checkoutForm">
 
-      <input type="email" id="email" placeholder="Email Address" required>
+        <input
+          type="text"
+          id="name"
+          placeholder="Full Name"
+          required
+        >
 
-      <input type="text" id="address" placeholder="Shipping Address" required>
+        <input
+          type="email"
+          id="email"
+          placeholder="Email Address"
+          required
+        >
 
-      <select id="payment" required>
-        <option value="">Select Payment Method</option>
-        <option value="Credit Card">Credit Card</option>
-        <option value="PayPal">PayPal</option>
-        <option value="Cash on Delivery">Cash on Delivery</option>
-      </select>
+        <input
+          type="text"
+          id="address"
+          placeholder="Shipping Address"
+          required
+        >
 
-      <textarea id="message" rows="4" placeholder="Extra Notes"></textarea>
+        <select id="payment" required>
+          <option value="">
+            Payment Method
+          </option>
 
-      <button type="submit">Complete Checkout</button>
+          <option value="Credit Card">
+            Credit Card
+          </option>
 
-    </form>
+          <option value="PayPal">
+            PayPal
+          </option>
+
+          <option value="Cash on Delivery">
+            Cash on Delivery
+          </option>
+        </select>
+
+        <textarea
+          id="message"
+          rows="4"
+          placeholder="Extra Notes"
+        ></textarea>
+
+        <button type="submit">
+          Complete Checkout
+        </button>
+
+      </form>
+
+    </div>
 
   </div>
 
@@ -81,57 +337,34 @@
     <p>© 2026 temu knockoffs</p>
   </footer>
 
-  <!-- EmailJS -->
+  <!-- EMAILJS -->
+
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 
   <script>
 
-    // EMAILJS SETUP
+    // EMAILJS INIT
+
     emailjs.init("YOUR_PUBLIC_KEY");
 
-    // CART ARRAY
+    // CART
+
     let cart = [];
 
-    // ADD PRODUCT TO CART
-    function addToCart(productName, productPrice){
+    // ADD TO CART
+
+    function addToCart(name, price){
 
       cart.push({
-        name: productName,
-        price: productPrice
+        name: name,
+        price: price
       });
 
       updateCart();
     }
 
-    // UPDATE CART DISPLAY
-    function updateCart(){
-
-      const cartItems = document.getElementById("cartItems");
-
-      const totalPrice = document.getElementById("totalPrice");
-
-      cartItems.innerHTML = "";
-
-      let total = 0;
-
-      cart.forEach((item, index) => {
-
-        total += item.price;
-
-        cartItems.innerHTML += `
-          <p>
-            ${item.name} - $${item.price.toFixed(2)}
-            <button type="button" onclick="removeItem(${index})">
-              Remove
-            </button>
-          </p>
-        `;
-      });
-
-      totalPrice.innerText = `Total: $${total.toFixed(2)}`;
-    }
-
     // REMOVE ITEM
+
     function removeItem(index){
 
       cart.splice(index, 1);
@@ -139,7 +372,56 @@
       updateCart();
     }
 
+    // UPDATE CART
+
+    function updateCart(){
+
+      const cartItems =
+        document.getElementById("cartItems");
+
+      const totalPrice =
+        document.getElementById("totalPrice");
+
+      cartItems.innerHTML = "";
+
+      let total = 0;
+
+      if(cart.length === 0){
+
+        cartItems.innerHTML =
+          "<p>Your cart is empty.</p>";
+      }
+
+      cart.forEach((item, index) => {
+
+        total += item.price;
+
+        cartItems.innerHTML += `
+
+          <div class="cart-item">
+
+            <span>
+              ${item.name} - $${item.price.toFixed(2)}
+            </span>
+
+            <button
+              class="remove-btn"
+              onclick="removeItem(${index})"
+            >
+              X
+            </button>
+
+          </div>
+
+        `;
+      });
+
+      totalPrice.innerText =
+        `Total: $${total.toFixed(2)}`;
+    }
+
     // CHECKOUT
+
     document.getElementById("checkoutForm")
       .addEventListener("submit", function(event){
 
@@ -158,7 +440,8 @@
 
       cart.forEach(item => {
 
-        orderList += `${item.name} - $${item.price}\n`;
+        orderList +=
+          `${item.name} - $${item.price}\n`;
 
         total += item.price;
       });
@@ -201,19 +484,23 @@
 
         updateCart();
 
-        document.getElementById("checkoutForm").reset();
+        document
+          .getElementById("checkoutForm")
+          .reset();
       })
 
       .catch(function(error){
 
-        alert("Failed to place order");
+        alert("Failed to send order");
 
         console.log(error);
       });
+
     });
 
   </script>
 
 </body>
+</html>
 ```
 
