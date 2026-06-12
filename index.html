@@ -1,21 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>lukewazxcvrm beverages</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>lukewarm beverages</title>
 
 <style>
-body{font-family:Arial;background:#f4f4f4;margin:0;}
-header{background:#111;color:#fff;padding:25px;text-align:center;}
+body{font-family:Arial;margin:0;background:#f4f4f4;}
+header{background:#111;color:white;padding:25px;text-align:center;}
 .container{width:90%;max-width:1000px;margin:auto;padding:20px;}
-.box{background:#fff;padding:15px;margin-top:20px;border-radius:10px;}
+
+.box{background:white;padding:15px;margin-top:15px;border-radius:10px;}
+
 .products{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;}
-.product{background:#fff;padding:10px;border-radius:8px;}
-button{padding:8px 10px;border:none;background:#111;color:#fff;cursor:pointer;border-radius:6px;}
+.product{background:#fff;padding:10px;border-radius:8px;border:1px solid #ddd;}
+
+button{padding:8px 10px;border:none;background:#111;color:white;border-radius:6px;cursor:pointer;}
 button:hover{background:#333;}
-.cart-item{display:flex;justify-content:space-between;padding:8px;border-bottom:1px solid #ddd;}
-input,textarea{width:100%;padding:8px;margin:5px 0;}
+
+.cart-item{display:flex;justify-content:space-between;padding:8px;border-bottom:1px solid #eee;}
+
+input,textarea{width:100%;padding:8px;margin:5px 0;border:1px solid #ccc;border-radius:6px;}
+
+#totalPrice{font-weight:bold;margin-top:10px;}
 </style>
 </head>
 
@@ -64,49 +71,20 @@ input,textarea{width:100%;padding:8px;margin:5px 0;}
 <div class="box">
 <h2>Cart</h2>
 <div id="cartItems">Empty</div>
-<h3 id="totalPrice">Total: $0</h3>
+<div id="totalPrice">Total: $0</div>
 </div>
 
 <!-- CHECKOUT -->
-document.getElementById("checkoutForm").addEventListener("submit", async (e) => {
-  e.preventDefault();
+<div class="box">
+<h2>Checkout</h2>
 
-  if (!auth.currentUser) return alert("Login first");
-  if (cart.length === 0) return alert("Cart empty");
+<form id="checkoutForm">
+<input id="name" placeholder="Name" required>
+<textarea id="message" placeholder="Message"></textarea>
+<button type="submit">Place Order</button>
+</form>
+</div>
 
-  const customerName = document.getElementById("name").value;
-  const messageValue = document.getElementById("message").value;
-
-  try {
-    for (const item of cart) {
-      await addDoc(collection(db, "orders"), {
-        userId: auth.currentUser.uid,
-        userEmail: auth.currentUser.email,
-
-        customerName: customerName,   // ✅ FIXED
-        productName: item.name,
-        quantity: item.quantity,
-        price: item.price,
-
-        message: messageValue,
-
-        orderDate: new Date()
-      });
-    }
-
-    cart = [];
-    renderCart();
-    checkoutForm.reset();
-
-    loadOrders(auth.currentUser.uid);
-
-    alert("Order placed!");
-
-  } catch (err) {
-    console.error(err);
-    alert(err.message);
-  }
-});
 <!-- MY ORDERS -->
 <div class="box">
 <h2>My Orders</h2>
@@ -133,7 +111,7 @@ addDoc,
 getDocs
 } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
 
-/* FIREBASE */
+/* FIREBASE CONFIG */
 const firebaseConfig = {
 apiKey: "AIzaSyC5zrSdUmrrfbT74TLX1lbVpB1M8mPgGiY",
 authDomain: "online-store-3ab02.firebaseapp.com",
@@ -170,6 +148,7 @@ cartItems.innerHTML = "";
 
 cart.forEach(i => {
 total += i.price * i.quantity;
+
 cartItems.innerHTML += `
 <div class="cart-item">
 <span>${i.name} x${i.quantity}</span>
@@ -203,23 +182,28 @@ ordersList.innerHTML = "Login to see orders";
 }
 });
 
-/* CHECKOUT */
+/* CHECKOUT (FIXED) */
 document.getElementById("checkoutForm").addEventListener("submit", async (e) => {
 e.preventDefault();
 
 if (!auth.currentUser) return alert("Login first");
 if (cart.length === 0) return alert("Cart empty");
 
+const customerName = document.getElementById("name").value;
+const messageValue = document.getElementById("message").value;
+
 try {
 for (const item of cart) {
 await addDoc(collection(db, "orders"), {
 userId: auth.currentUser.uid,
 userEmail: auth.currentUser.email,
-customerName: name.value,
+
+customerName: customerName,
 productName: item.name,
 quantity: item.quantity,
 price: item.price,
-message: message.value,
+
+message: messageValue,
 orderDate: new Date()
 });
 }
@@ -227,6 +211,7 @@ orderDate: new Date()
 cart = [];
 renderCart();
 checkoutForm.reset();
+
 loadOrders(auth.currentUser.uid);
 
 alert("Order placed!");
@@ -237,7 +222,7 @@ alert(err.message);
 }
 });
 
-/* MY ORDERS */
+/* MY ORDERS UI */
 async function loadOrders(uid) {
 const snap = await getDocs(collection(db, "orders"));
 
@@ -245,6 +230,7 @@ let html = "";
 
 snap.forEach(doc => {
 const o = doc.data();
+
 if (o.userId === uid) {
 html += `
 <div class="cart-item">
@@ -252,7 +238,9 @@ html += `
 <b>${o.productName}</b><br>
 Qty: ${o.quantity} | $${o.price}
 </div>
-<div>${new Date(o.orderDate.seconds ? o.orderDate.seconds * 1000 : o.orderDate).toLocaleString()}</div>
+<div>
+${new Date(o.orderDate?.seconds ? o.orderDate.seconds * 1000 : o.orderDate).toLocaleString()}
+</div>
 </div>`;
 }
 });
