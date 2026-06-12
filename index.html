@@ -258,7 +258,50 @@
     <h1>lukewarm beverages</h1>
     <p>pls buy from me so i can make money</p>
   </header>
+  <div class="container">
 
+  <div class="checkout-box">
+
+    <h2>Account</h2>
+
+    <input
+      type="email"
+      id="loginEmail"
+      placeholder="Email"
+    >
+
+    <input
+      type="password"
+      id="loginPassword"
+      placeholder="Password"
+    >
+
+    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+
+      <button type="button" onclick="register()">
+        Register
+      </button>
+
+      <button type="button" onclick="login()">
+        Login
+      </button>
+
+      <button type="button" onclick="logout()">
+        Logout
+      </button>
+
+    </div>
+
+    <p
+      id="authStatus"
+      style="margin-top:15px;color:#666;"
+    >
+      Not logged in
+    </p>
+
+  </div>
+
+</div>
   <div class="container">
 
     <h2 class="section-title">
@@ -404,234 +447,384 @@
     <p>© 2026 temu knockoffs</p>
   </footer>
 
-  <!-- EMAILJS -->
+ <script type="module">
 
-  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
 
-  <script>
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged
+}
+from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
 
-    // EMAILJS INIT
+import emailjs
+from "https://cdn.jsdelivr.net/npm/@emailjs/browser@4/+esm";
 
-    emailjs.init("HujS-X5wvUe05mmAi");
+/* -------------------------
+   FIREBASE CONFIG
+------------------------- */
 
-    // CART
+const firebaseConfig = {
+  apiKey: "AIzaSyC5zrSdUmrrfbT74TLX1lbVpB1M8mPgGiY",
+  authDomain: "online-store-3ab02.firebaseapp.com",
+  projectId: "online-store-3ab02",
+  storageBucket: "online-store-3ab02.firebasestorage.app",
+  messagingSenderId: "508936229213",
+  appId: "1:508936229213:web:ff3b8d810d172ae46458b4",
+  measurementId: "G-DV2CQ32389"
+};
 
-    let cart = [];
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
 
-    // ADD TO CART
+/* -------------------------
+   EMAILJS
+------------------------- */
 
-    function addToCart(name, price){
+emailjs.init("HujS-X5wvUe05mmAi");
 
-      const existingItem =
-        cart.find(item => item.name === name);
+/* -------------------------
+   AUTH
+------------------------- */
 
-      if(existingItem){
+window.register = async function(){
 
-        existingItem.quantity += 1;
+  const email =
+    document.getElementById("loginEmail").value;
 
-      } else {
+  const password =
+    document.getElementById("loginPassword").value;
 
-        cart.push({
-          name: name,
-          price: price,
-          quantity: 1
-        });
-      }
+  if(password.length < 6){
 
-      updateCart();
-    }
+    alert(
+      "Password must be at least 6 characters."
+    );
 
-    // INCREASE QUANTITY
+    return;
+  }
 
-    function increaseQuantity(index){
+  try{
 
-      cart[index].quantity++;
+    await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
 
-      updateCart();
-    }
+    alert("Account created!");
 
-    // DECREASE QUANTITY
+  }catch(error){
 
-    function decreaseQuantity(index){
+    alert(error.message);
+  }
+};
 
-      if(cart[index].quantity > 1){
+window.login = async function(){
 
-        cart[index].quantity--;
+  const email =
+    document.getElementById("loginEmail").value;
 
-      } else {
+  const password =
+    document.getElementById("loginPassword").value;
 
-        cart.splice(index, 1);
-      }
+  try{
 
-      updateCart();
-    }
+    await signInWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
 
-    // UPDATE CART
+    alert("Logged in!");
 
-    function updateCart(){
+  }catch(error){
 
-      const cartItems =
-        document.getElementById("cartItems");
+    alert(error.message);
+  }
+};
 
-      const totalPrice =
-        document.getElementById("totalPrice");
+window.logout = async function(){
 
-      cartItems.innerHTML = "";
+  try{
 
-      let total = 0;
+    await signOut(auth);
 
-      if(cart.length === 0){
+    alert("Logged out");
 
-        cartItems.innerHTML = `
-          <p class="empty-cart">
-            Your cart is empty.
+  }catch(error){
+
+    alert(error.message);
+  }
+};
+
+onAuthStateChanged(auth, (user)=>{
+
+  const status =
+    document.getElementById("authStatus");
+
+  if(user){
+
+    status.textContent =
+      `Logged in as ${user.email}`;
+
+    document.getElementById("email").value =
+      user.email;
+
+  }else{
+
+    status.textContent =
+      "Not logged in";
+  }
+});
+
+/* -------------------------
+   CART
+------------------------- */
+
+let cart = [];
+
+window.addToCart = function(name, price){
+
+  const existingItem =
+    cart.find(item => item.name === name);
+
+  if(existingItem){
+
+    existingItem.quantity++;
+
+  }else{
+
+    cart.push({
+      name,
+      price,
+      quantity:1
+    });
+  }
+
+  updateCart();
+};
+
+window.increaseQuantity =
+function(index){
+
+  cart[index].quantity++;
+
+  updateCart();
+};
+
+window.decreaseQuantity =
+function(index){
+
+  if(cart[index].quantity > 1){
+
+    cart[index].quantity--;
+
+  }else{
+
+    cart.splice(index,1);
+  }
+
+  updateCart();
+};
+
+function updateCart(){
+
+  const cartItems =
+    document.getElementById("cartItems");
+
+  const totalPrice =
+    document.getElementById("totalPrice");
+
+  cartItems.innerHTML = "";
+
+  let total = 0;
+
+  if(cart.length === 0){
+
+    cartItems.innerHTML = `
+      <p class="empty-cart">
+        Your cart is empty.
+      </p>
+    `;
+  }
+
+  cart.forEach((item,index)=>{
+
+    const subtotal =
+      item.price * item.quantity;
+
+    total += subtotal;
+
+    cartItems.innerHTML += `
+
+      <div class="cart-item">
+
+        <div class="cart-left">
+
+          <h4>${item.name}</h4>
+
+          <p>
+            $${item.price.toFixed(2)}
+            each
           </p>
-        `;
-      }
 
-      cart.forEach((item, index) => {
+        </div>
 
-        const subtotal =
-          item.price * item.quantity;
+        <div class="cart-middle">
 
-        total += subtotal;
+          <button
+            type="button"
+            class="qty-btn"
+            onclick="decreaseQuantity(${index})"
+          >
+            −
+          </button>
 
-        cartItems.innerHTML += `
+          <span class="quantity">
+            ${item.quantity}
+          </span>
 
-          <div class="cart-item">
+          <button
+            type="button"
+            class="qty-btn"
+            onclick="increaseQuantity(${index})"
+          >
+            +
+          </button>
 
-            <div class="cart-left">
+        </div>
 
-              <h4>${item.name}</h4>
+        <div class="cart-right">
 
-              <p>
-                $${item.price.toFixed(2)}
-                each
-              </p>
+          $${subtotal.toFixed(2)}
 
-            </div>
+        </div>
 
-            <div class="cart-middle">
+      </div>
 
-              <button
-                type="button"
-                class="qty-btn"
-                onclick="decreaseQuantity(${index})"
-              >
-                −
-              </button>
+    `;
+  });
 
-              <span class="quantity">
-                ${item.quantity}
-              </span>
+  totalPrice.innerText =
+    `Total: $${total.toFixed(2)}`;
+}
 
-              <button
-                type="button"
-                class="qty-btn"
-                onclick="increaseQuantity(${index})"
-              >
-                +
-              </button>
+/* -------------------------
+   CHECKOUT
+------------------------- */
 
-            </div>
+document
+.getElementById("checkoutForm")
+.addEventListener(
+  "submit",
+  function(event){
 
-            <div class="cart-right">
+    event.preventDefault();
 
-              $${subtotal.toFixed(2)}
+    if(!auth.currentUser){
 
-            </div>
+      alert(
+        "Please login before checkout."
+      );
 
-          </div>
-
-        `;
-      });
-
-      totalPrice.innerText =
-        `Total: $${total.toFixed(2)}`;
+      return;
     }
 
-    // CHECKOUT
+    if(cart.length === 0){
 
-    document.getElementById("checkoutForm")
-      .addEventListener("submit", function(event){
+      alert(
+        "Your cart is empty!"
+      );
 
-      event.preventDefault();
+      return;
+    }
 
-      if(cart.length === 0){
+    let orderList = "";
+    let total = 0;
 
-        alert("Your cart is empty!");
+    cart.forEach(item=>{
 
-        return;
-      }
+      const subtotal =
+        item.price *
+        item.quantity;
 
-      let orderList = "";
+      orderList +=
+        `${item.name} x${item.quantity} - $${subtotal.toFixed(2)}\n`;
 
-      let total = 0;
-
-      cart.forEach(item => {
-
-        const subtotal =
-          item.price * item.quantity;
-
-        orderList +=
-          `${item.name} x${item.quantity} - $${subtotal.toFixed(2)}\n`;
-
-        total += subtotal;
-      });
-
-      const templateParams = {
-
-        customer_name:
-          document.getElementById("name").value,
-
-        customer_email:
-          document.getElementById("email").value,
-
-        address:
-          document.getElementById("address").value,
-
-        payment_method:
-          document.getElementById("payment").value,
-
-        message:
-          document.getElementById("message").value,
-
-        order_details:
-          orderList,
-
-        total_price:
-          total.toFixed(2)
-      };
-
-      emailjs.send(
-        "service_e7m1h5n",
-        "template_3sv5vcc",
-        templateParams
-      )
-
-      .then(function(){
-
-        alert("Order placed successfully!");
-
-        cart = [];
-
-        updateCart();
-
-        document
-          .getElementById("checkoutForm")
-          .reset();
-      })
-
-      .catch(function(error){
-
-        alert("Failed to send order");
-
-        console.log(error);
-      });
-
+      total += subtotal;
     });
 
-  </script>
+    const templateParams = {
+
+      customer_name:
+        document.getElementById("name").value,
+
+      customer_email:
+        auth.currentUser.email,
+
+      address:
+        document.getElementById("address").value,
+
+      payment_method:
+        document.getElementById("payment").value,
+
+      message:
+        document.getElementById("message").value,
+
+      order_details:
+        orderList,
+
+      total_price:
+        total.toFixed(2)
+    };
+
+    emailjs.send(
+      "service_e7m1h5n",
+      "template_3sv5vcc",
+      templateParams
+    )
+
+    .then(()=>{
+
+      alert(
+        "Order placed successfully!"
+      );
+
+      cart = [];
+
+      updateCart();
+
+      document
+      .getElementById(
+        "checkoutForm"
+      )
+      .reset();
+
+      if(auth.currentUser){
+
+        document
+        .getElementById("email")
+        .value =
+        auth.currentUser.email;
+      }
+
+    })
+
+    .catch(error=>{
+
+      console.error(error);
+
+      alert(
+        "Failed to send order."
+      );
+    });
+
+});
 
 </body>
 </html>
