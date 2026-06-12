@@ -68,16 +68,45 @@ input,textarea{width:100%;padding:8px;margin:5px 0;}
 </div>
 
 <!-- CHECKOUT -->
-<div class="box">
-<h2>Checkout</h2>
+document.getElementById("checkoutForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
 
-<form id="checkoutForm">
-<input id="name" placeholder="Name" required>
-<textarea id="message" placeholder="Message"></textarea>
-<button type="submit">Place Order</button>
-</form>
-</div>
+  if (!auth.currentUser) return alert("Login first");
+  if (cart.length === 0) return alert("Cart empty");
 
+  const customerName = document.getElementById("name").value;
+  const messageValue = document.getElementById("message").value;
+
+  try {
+    for (const item of cart) {
+      await addDoc(collection(db, "orders"), {
+        userId: auth.currentUser.uid,
+        userEmail: auth.currentUser.email,
+
+        customerName: customerName,   // ✅ FIXED
+        productName: item.name,
+        quantity: item.quantity,
+        price: item.price,
+
+        message: messageValue,
+
+        orderDate: new Date()
+      });
+    }
+
+    cart = [];
+    renderCart();
+    checkoutForm.reset();
+
+    loadOrders(auth.currentUser.uid);
+
+    alert("Order placed!");
+
+  } catch (err) {
+    console.error(err);
+    alert(err.message);
+  }
+});
 <!-- MY ORDERS -->
 <div class="box">
 <h2>My Orders</h2>
