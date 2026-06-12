@@ -1,27 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>lukewarm beverages</title>
 
 <style>
-body{font-family:Arial;margin:0;background:#f4f4f4;}
-header{background:#111;color:#fff;padding:30px;text-align:center;}
+body{font-family:Arial;background:#f4f4f4;margin:0;}
+header{background:#111;color:#fff;padding:25px;text-align:center;}
 .container{width:90%;max-width:1000px;margin:auto;padding:20px;}
-
-.box{background:#fff;padding:20px;margin-top:20px;border-radius:12px;}
-
-.products{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:15px;}
-.product{background:#fff;padding:10px;border-radius:10px;}
-
-button{padding:8px 12px;border:none;background:#111;color:#fff;border-radius:6px;cursor:pointer;}
-button:hover{background:#444;}
-
+.box{background:#fff;padding:15px;margin-top:20px;border-radius:10px;}
+.products{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;}
+.product{background:#fff;padding:10px;border-radius:8px;}
+button{padding:8px 10px;border:none;background:#111;color:#fff;cursor:pointer;border-radius:6px;}
+button:hover{background:#333;}
 .cart-item{display:flex;justify-content:space-between;padding:8px;border-bottom:1px solid #ddd;}
-
-#totalPrice{font-weight:bold;margin-top:10px;}
-
 input,textarea{width:100%;padding:8px;margin:5px 0;}
 </style>
 </head>
@@ -80,13 +73,12 @@ input,textarea{width:100%;padding:8px;margin:5px 0;}
 
 <form id="checkoutForm">
 <input id="name" placeholder="Name" required>
-<input id="email" placeholder="Email">
 <textarea id="message" placeholder="Message"></textarea>
 <button type="submit">Place Order</button>
 </form>
 </div>
 
-<!-- MY ORDERS UI -->
+<!-- MY ORDERS -->
 <div class="box">
 <h2>My Orders</h2>
 <div id="ordersList">Login to see orders</div>
@@ -94,7 +86,6 @@ input,textarea{width:100%;padding:8px;margin:5px 0;}
 
 </div>
 
-<!-- FIREBASE -->
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
@@ -127,31 +118,6 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-/* AUTH */
-window.register = async () => {
-await createUserWithEmailAndPassword(auth, loginEmail.value, loginPassword.value);
-};
-
-window.login = async () => {
-await signInWithEmailAndPassword(auth, loginEmail.value, loginPassword.value);
-};
-
-window.logout = async () => {
-await signOut(auth);
-};
-
-/* AUTH STATE */
-onAuthStateChanged(auth, async (user) => {
-if (user) {
-authStatus.textContent = "Logged in: " + user.email;
-email.value = user.email;
-loadOrders(user.uid);
-} else {
-authStatus.textContent = "Not logged in";
-ordersList.innerHTML = "Login to see orders";
-}
-});
-
 /* CART */
 let cart = [];
 
@@ -175,7 +141,6 @@ cartItems.innerHTML = "";
 
 cart.forEach(i => {
 total += i.price * i.quantity;
-
 cartItems.innerHTML += `
 <div class="cart-item">
 <span>${i.name} x${i.quantity}</span>
@@ -186,13 +151,37 @@ cartItems.innerHTML += `
 totalPrice.innerText = "Total: $" + total;
 }
 
+/* AUTH */
+window.register = async () => {
+await createUserWithEmailAndPassword(auth, loginEmail.value, loginPassword.value);
+};
+
+window.login = async () => {
+await signInWithEmailAndPassword(auth, loginEmail.value, loginPassword.value);
+};
+
+window.logout = async () => {
+await signOut(auth);
+};
+
+onAuthStateChanged(auth, (user) => {
+if (user) {
+authStatus.textContent = "Logged in: " + user.email;
+loadOrders(user.uid);
+} else {
+authStatus.textContent = "Not logged in";
+ordersList.innerHTML = "Login to see orders";
+}
+});
+
 /* CHECKOUT */
-checkoutForm.addEventListener("submit", async (e) => {
+document.getElementById("checkoutForm").addEventListener("submit", async (e) => {
 e.preventDefault();
 
 if (!auth.currentUser) return alert("Login first");
 if (cart.length === 0) return alert("Cart empty");
 
+try {
 for (const item of cart) {
 await addDoc(collection(db, "orders"), {
 userId: auth.currentUser.uid,
@@ -209,13 +198,17 @@ orderDate: new Date()
 cart = [];
 renderCart();
 checkoutForm.reset();
-
 loadOrders(auth.currentUser.uid);
 
 alert("Order placed!");
+
+} catch (err) {
+console.error(err);
+alert(err.message);
+}
 });
 
-/* MY ORDERS UI */
+/* MY ORDERS */
 async function loadOrders(uid) {
 const snap = await getDocs(collection(db, "orders"));
 
@@ -223,12 +216,11 @@ let html = "";
 
 snap.forEach(doc => {
 const o = doc.data();
-
 if (o.userId === uid) {
 html += `
 <div class="cart-item">
 <div>
-<strong>${o.productName}</strong><br>
+<b>${o.productName}</b><br>
 Qty: ${o.quantity} | $${o.price}
 </div>
 <div>${new Date(o.orderDate.seconds ? o.orderDate.seconds * 1000 : o.orderDate).toLocaleString()}</div>
