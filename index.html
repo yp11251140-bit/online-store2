@@ -534,13 +534,42 @@ window.login = async function(){
 
   try{
 
-    await signInWithEmailAndPassword(
-      auth,
-      email,
-      password
-    );
+    window.login = async function () {
+
+  const email =
+    document.getElementById("loginEmail").value;
+
+  const password =
+    document.getElementById("loginPassword").value;
+
+  try {
+
+    const result =
+      await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+
+    document.getElementById("authStatus")
+      .textContent =
+      `Logged in as ${result.user.email}`;
+
+    document.getElementById("email")
+      .value =
+      result.user.email;
 
     alert("Logged in!");
+
+  } catch(error) {
+
+    console.error(error);
+
+    alert(error.message);
+  }
+};
+
+
 
   }catch(error){
 
@@ -563,6 +592,27 @@ window.logout = async function(){
 };
 
 onAuthStateChanged(auth, (user)=>{
+
+  console.log("Auth changed:", user);
+
+  const status =
+    document.getElementById("authStatus");
+
+  if(user){
+
+    status.textContent =
+      `Logged in as ${user.email}`;
+
+    document.getElementById("email").value =
+      user.email;
+
+  }else{
+
+    status.textContent =
+      "Not logged in";
+  }
+
+});
 
   const status =
     document.getElementById("authStatus");
