@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>lukewarm beverages</title>
+<title>lukewm beverages</title>
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif;}
@@ -106,132 +106,158 @@ input,select,textarea{width:100%;padding:10px;margin:5px 0;border-radius:8px;bor
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
 import {
-getAuth,
-createUserWithEmailAndPassword,
-signInWithEmailAndPassword,
-signOut,
-onAuthStateChanged
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
 
 import {
-getFirestore,
-collection,
-addDoc
+  getFirestore,
+  collection,
+  addDoc
 } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
 
+/* ---------------- FIREBASE ---------------- */
+
 const firebaseConfig = {
-apiKey: "AIzaSyC5zrSdUmrrfbT74TLX1lbVpB1M8mPgGiY",
-authDomain: "online-store-3ab02.firebaseapp.com",
-projectId: "online-store-3ab02",
-storageBucket: "online-store-3ab02.firebasestorage.app",
-messagingSenderId: "508936229213",
-appId: "1:508936229213:web:ff3b8d810d172ae46458b4"
+  apiKey: "AIzaSyC5zrSdUmrrfbT74TLX1lbVpB1M8mPgGiY",
+  authDomain: "online-store-3ab02.firebaseapp.com",
+  projectId: "online-store-3ab02",
+  storageBucket: "online-store-3ab02.firebasestorage.app",
+  messagingSenderId: "508936229213",
+  appId: "1:508936229213:web:ff3b8d810d172ae46458b4"
 };
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-const db = getFirestore(app);
+const db = getFirestore(app); // ✅ FIRESTORE ADDED
 
-/* AUTH */
+/* ---------------- AUTH ---------------- */
+
 window.register = async () => {
-const email = loginEmail.value;
-const pass = loginPassword.value;
-try {
-await createUserWithEmailAndPassword(auth,email,pass);
-alert("Registered");
-} catch(e){ alert(e.message); }
+  const email = loginEmail.value;
+  const pass = loginPassword.value;
+
+  try {
+    await createUserWithEmailAndPassword(auth, email, pass);
+    alert("Registered!");
+  } catch (e) {
+    alert(e.message);
+  }
 };
 
 window.login = async () => {
-const email = loginEmail.value;
-const pass = loginPassword.value;
-try {
-const res = await signInWithEmailAndPassword(auth,email,pass);
-authStatus.textContent = "Logged in: " + res.user.email;
-} catch(e){ alert(e.message); }
+  const email = loginEmail.value;
+  const pass = loginPassword.value;
+
+  try {
+    const res = await signInWithEmailAndPassword(auth, email, pass);
+    authStatus.textContent = "Logged in: " + res.user.email;
+  } catch (e) {
+    alert(e.message);
+  }
 };
 
 window.logout = async () => {
-await signOut(auth);
-authStatus.textContent = "Not logged in";
+  await signOut(auth);
+  authStatus.textContent = "Not logged in";
 };
 
-/* AUTH STATE */
-onAuthStateChanged(auth,(user)=>{
-if(user){
-authStatus.textContent = "Logged in: " + user.email;
-email.value = user.email;
-}
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    authStatus.textContent = "Logged in: " + user.email;
+    email.value = user.email;
+  } else {
+    authStatus.textContent = "Not logged in";
+  }
 });
 
-/* CART */
+/* ---------------- CART ---------------- */
+
 let cart = [];
 
-window.addToCart = (name,price)=>{
-const item = cart.find(i=>i.name===name);
-if(item) item.quantity++;
-else cart.push({name,price,quantity:1});
-renderCart();
+window.addToCart = (name, price) => {
+  const item = cart.find(i => i.name === name);
+
+  if (item) item.quantity++;
+  else cart.push({ name, price, quantity: 1 });
+
+  renderCart();
 };
 
-function renderCart(){
-let html="";
-let total=0;
+function renderCart() {
+  let html = "";
+  let total = 0;
 
-if(cart.length===0){
-cartItems.innerHTML="Empty";
-totalPrice.innerText="Total: $0";
-return;
+  if (cart.length === 0) {
+    cartItems.innerHTML = "Empty";
+    totalPrice.innerText = "Total: $0";
+    return;
+  }
+
+  cart.forEach(i => {
+    total += i.price * i.quantity;
+
+    html += `
+      <div class="cart-item">
+        <span>${i.name} x${i.quantity}</span>
+        <span>$${i.price * i.quantity}</span>
+      </div>
+    `;
+  });
+
+  cartItems.innerHTML = html;
+  totalPrice.innerText = "Total: $" + total;
 }
 
-cart.forEach((i)=>{
-total+=i.price*i.quantity;
-html+=`
-<div class="cart-item">
-<span>${i.name} x${i.quantity}</span>
-<span>$${i.price*i.quantity}</span>
-</div>`;
-});
+/* ---------------- CHECKOUT (FIRESTORE HERE) ---------------- */
 
-cartItems.innerHTML=html;
-totalPrice.innerText="Total: $"+total;
-}
+checkoutForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
 
-/* CHECKOUT */
-checkoutForm.addEventListener("submit", async (e)=>{
-e.preventDefault();
+  if (!auth.currentUser) {
+    alert("Login first");
+    return;
+  }
 
-if(!auth.currentUser){
-alert("Login first");
-return;
-}
+  if (cart.length === 0) {
+    alert("Cart empty");
+    return;
+  }
 
-if(cart.length===0){
-alert("Cart empty");
-return;
-}
+  let total = 0;
 
-let total=0;
-cart.forEach(i=>total+=i.price*i.quantity);
+  cart.forEach(i => {
+    total += i.price * i.quantity;
+  });
 
-await addDoc(collection(db,"orders"),{
-uid:auth.currentUser.uid,
-email:auth.currentUser.email,
-name:name.value,
-address:address.value,
-payment:payment.value,
-message:message.value,
-items:cart,
-total,
-createdAt:new Date()
-});
+  try {
+    // ✅ SAVE ORDER TO FIRESTORE
+    await addDoc(collection(db, "orders"), {
+      uid: auth.currentUser.uid,
+      email: auth.currentUser.email,
+      name: name.value,
+      address: address.value,
+      payment: payment.value,
+      message: message.value,
+      items: cart,
+      total,
+      createdAt: new Date()
+    });
 
-alert("Order placed!");
-cart=[];
-renderCart();
-checkoutForm.reset();
+    alert("Order placed!");
+
+    cart = [];
+    renderCart();
+    checkoutForm.reset();
+
+  } catch (error) {
+    console.error(error);
+    alert("Failed to save order: " + error.message);
+  }
 });
 </script>
-
 </body>
 </html>
