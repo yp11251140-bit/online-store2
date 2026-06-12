@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>luke beverages</title>
+  <title>luke basdeverages</title>
 
   <style>
 
@@ -630,7 +630,7 @@ onAuthStateChanged(auth, (user)=>{
     status.textContent =
       "Not logged in";
   }
-);
+   });
 
 /* -------------------------
    CART
@@ -865,17 +865,19 @@ document
 
     })
 
-    .catch(error=>{
+.catch(error=>{
 
-      console.error(error);
+  console.error(error);
 
-      alert(
-        "Failed to send order."
-      );
-    });
+  alert(
+    "Failed to send order."
+  );
 
 });
+
+}); // closes addEventListener
+
 </script>
+
 </body>
 </html>
-```
