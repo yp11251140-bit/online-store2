@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>lukewarddfhgdghm beverages</title>
+  <title>luke beverages</title>
 
   <style>
 
@@ -461,8 +461,8 @@ import {
 }
 from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
 
-import emailjs
-from "https://cdn.jsdelivr.net/npm/@emailjs/browser@4/+esm";
+//import emailjs
+//from "https://cdn.jsdelivr.net/npm/@emailjs/browser@4/+esm";
 
 /* -------------------------
    FIREBASE CONFIG
@@ -485,7 +485,7 @@ const auth = getAuth(app);
    EMAILJS
 ------------------------- */
 
-emailjs.init("HujS-X5wvUe05mmAi");
+//emailjs.init("HujS-X5wvUe05mmAi");
 
 /* -------------------------
    AUTH
@@ -630,7 +630,7 @@ onAuthStateChanged(auth, (user)=>{
     status.textContent =
       "Not logged in";
   }
-});
+);
 
 /* -------------------------
    CART
@@ -833,11 +833,11 @@ document
         total.toFixed(2)
     };
 
-    emailjs.send(
-      "service_e7m1h5n",
-      "template_3sv5vcc",
-      templateParams
-    )
+    //emailjs.send(
+      //"service_e7m1h5n",
+      //"template_3sv5vcc",
+      //templateParams
+    //)
 
     .then(()=>{
 
